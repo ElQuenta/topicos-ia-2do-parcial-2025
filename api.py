@@ -55,7 +55,7 @@ def query_agent(
     )
     if track_query and query_id is not None:
         results_json = results.model_dump_json()
-        update_query = f"UPDATE queries SET result='{results_json}' WHERE query_id='{query_id}';"
+        update_query = f"UPDATE queries SET result='{results_json}', status='finished' WHERE id='{query_id}';"
         execute_sql(db_conn, update_query)
     query_history.clear()
 
@@ -92,7 +92,8 @@ def get_async_query_result(
 ) -> AgentAsyncStartResponse | AgentAsyncFinishResponse:
     result = execute_sql(db_conn, f"SELECT * FROM queries WHERE id = '{query_id}'")
     rows = ast.literal_eval(result)
-    if not rows:
+    print(f"Fetched rows for query_id {query_id}: {rows}")
+    if not rows or not rows[0][2]:
         return AgentAsyncStartResponse(
             query_id=query_id,
             status="pending",

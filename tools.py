@@ -22,6 +22,7 @@ def execute_sql(conn: sqlite3.Connection, query: str, query_history: list[str] |
             conn.commit()
             return "Query executed successfully (no data returned)."
     except sqlite3.Error as e:
+        print(f"   [ERROR] SQL Error: {e}")
         return f"Error: {e}"  # Return the error message string
 
 

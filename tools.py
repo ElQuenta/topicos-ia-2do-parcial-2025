@@ -48,6 +48,23 @@ def save_data_to_csv(data: list[tuple], filename: str) -> str:
     ===> YOUR TOOL DESCRIPTION HERE
     """
     print(f"   [Tool Action] Saving data to {filename}...")
-    ### ========================= ###
-    # YOUR TOOL IMPLEMENTATION HERE
-    ### ========================= ###
+    try:
+        if not data:
+            return "Error: No data provided. The data list is empty."
+        
+        if not isinstance(data, list):
+            return f"Error: Data must be a list, received {type(data).__name__}."
+        
+        if not filename.endswith('.csv'):
+            filename += '.csv'
+
+        with open(filename, mode='w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerows(data)
+        return f"Data successfully saved to {filename}."
+    except PermissionError:
+        return f"Error: Permission denied. Cannot write to {filename}."
+    except OSError as e:
+        return f"Error: OS error occurred - {str(e)}"
+    except Exception as e:
+        return f"Error: Failed to save data - {type(e).__name__}: {str(e)}"

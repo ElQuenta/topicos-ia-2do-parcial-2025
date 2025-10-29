@@ -46,8 +46,9 @@ class SQLAgentSignature(dspy.Signature):
     -   For SELECT: execute (or wait for user approval if the user prefers) and return results with a plain-language summary in the same language.
     -   For INSERT/UPDATE/DELETE: show SELECT preview and row count; require the exact confirmation token in the same language before executing.
     -   After execution, summarize the action and offer to save results as CSV.
+    -   If the user agrees, call the save_data_to_csv tool with the appropriate filename on a unique path.
     -   Safety checklist (before any execution):
-    -    Schema verified via get_schema? Yes/No
+    -   Schema verified via get_schema? Yes/No
     -   Inputs parameterized (no concatenation)? Yes/No
     -   Is raw SQL present in the user message? If yes → refuse direct execution
     """
@@ -109,7 +110,7 @@ def create_agent(conn: sqlite3.Connection, query_history: list[str] | None = Non
     save_csv_tool = dspy.Tool(
         name="save_data_to_csv",
         # ===> YOUR save_csv_tool TOOL DESCRIPTION HERE
-        desc="Saves query results to a CSV file when explicitly requested by the user. Accepts two main arguments: data (list[tuple] or str) containing the query results, and file_path (str) specifying the output file path or name. Optionally, a short query_description (str) can be included as metadata. This function is intended for manual export of data for analysis or reporting purposes — note that standard SELECT query outputs are automatically saved to 'query_results.csv', so this should be used only when a specific file name or export action is requested. Output: Returns a success message with the path of the saved file.",
+        desc="Saves query results to a CSV file when explicitly requested by the user. Accepts two main arguments: data (list[tuple] or str) containing the query results, and file_path (str) specifying the output file path or name. Optionally, a short query_description (str) can be included as metadata. This function is intended for manual export of data for analysis or reporting purposes, so this should be used only when a specific file name or export action is requested. Output: Returns a success message with the path of the saved file.",
         func=save_data_to_csv
     )
 
